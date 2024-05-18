@@ -1,0 +1,21 @@
+# .gitignore
+
+# Environment variables
+.env
+* .pyc
+__pycache__/
+# Python
+
+
+# Logs
+*.log
+*.pot
+
+# Database
+db.sqlite3
+
+# Media
+media/
+
+# macOS
+.DS_Store
