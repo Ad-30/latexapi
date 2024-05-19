@@ -28,13 +28,13 @@ class LaTeXToPDFView(APIView):
 
                 try:
                     image_name = image_url.split('/')[-1].replace('%', '')
-                    urllib.request.urlretrieve(image_url, f"/home/latexapi/latexapi/apis/pdfs/{image_name}")
-                    image = Image.open(f"/home/latexapi/latexapi/apis/pdfs/{image_name}")
+                    urllib.request.urlretrieve(image_url, f"/home/ubuntu/latexapi/apis/pdfs/{image_name}")
+                    image = Image.open(f"/home/ubuntu/latexapi/apis/pdfs/{image_name}")
                     target_width = 100
                     original_width, original_height = image.size
                     target_height = int((target_width / original_width) * original_height)
                     resized_image = image.resize((target_width, target_height))
-                    resized_image.save(f"/home/latexapi/latexapi/apis/pdfs/{image_name}")
+                    resized_image.save(f"/home/ubuntu/latexapi/apis/pdfs/{image_name}")
                     image.close()
 
                 except Exception as e:
@@ -58,7 +58,7 @@ class LaTeXToPDFView(APIView):
                 doc.preamble.append(NoEscape(doc_head))
                 doc.append(NoEscape(doc_body))
                 pdf_name = f"resume_{uuid4()}"
-                pdf_path = f'/home/latexapi/latexapi/apis/pdfs/{pdf_name}'
+                pdf_path = f'/home/ubuntu/latexapi/apis/pdfs/{pdf_name}'
                 doc.generate_pdf(pdf_path, clean_tex=True)
                 return pdf_name
 
@@ -68,10 +68,10 @@ class LaTeXToPDFView(APIView):
             if isinstance(pdf_name_or_response, Response):
                 return pdf_name_or_response
             else:
-                file = f'/home/latexapi/latexapi/apis/pdfs/{pdf_name_or_response}{pdf_ex}'
+                file = f'/home/ubuntu/latexapi/apis/pdfs/{pdf_name_or_response}{pdf_ex}'
                 response = FileResponse(open(file, 'rb'), as_attachment=True, filename="resume.pdf")
                 if applicant_data["selectedTemplate"] == 3:
-                    os.remove(f"/home/latexapi/latexapi/apis/pdfs/{image_name}")
+                    os.remove(f"/home/ubuntu/latexapi/apis/pdfs/{image_name}")
                     os.remove(file)
                 else:
                     os.remove(file)
