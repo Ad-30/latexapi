@@ -165,7 +165,7 @@ def template_two(data, image_name):
 \usepackage{enumitem}
 \usepackage{textcomp}
 \usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
+
 
 \setlength{\outerbordwidth}{3pt}
 \definecolor{shadecolor}{gray}{0.75}
@@ -343,7 +343,7 @@ def template_three(data, image_name):
 \usepackage{multicol}
 \usepackage{graphicx}
 \usepackage{cfr-lm}
-\usepackage[T1]{fontenc}
+
 \setlength{\multicolsep}{0pt}
 \pagestyle{fancy}
 \fancyhf{} % clear all header and footer fields
