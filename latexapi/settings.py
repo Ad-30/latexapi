@@ -87,6 +87,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "latexapi.wsgi.application"
 
+CORS_ALLOW_HEADERS = (
+    "X-Access-Key",
+)
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
