@@ -68,7 +68,7 @@ class LaTeXToPDFView(APIView):
             if isinstance(pdf_name_or_response, Response):
                 return pdf_name_or_response
             else:
-                file = f'/home/latexapi/latexapi/apis/pdfs/pdfs/{pdf_name_or_response}{pdf_ex}'
+                file = f'/home/latexapi/latexapi/apis/pdfs/{pdf_name_or_response}{pdf_ex}'
                 response = FileResponse(open(file, 'rb'), as_attachment=True, filename="resume.pdf")
                 if applicant_data["selectedTemplate"] == 3:
                     os.remove(f"/home/latexapi/latexapi/apis/pdfs/{image_name}")
