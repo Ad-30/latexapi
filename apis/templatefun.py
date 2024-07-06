@@ -67,14 +67,16 @@ def template_one(data, image_name):
 
 \vspace*{-10pt}
 \begin{center}
-	{\Huge \scshape {''' + data["basics"]["name"] + r'''}}\\
-	Jaipur $\cdot$ ''' + data["basics"]["email"] + r''' $\cdot$ ''' + data["basics"]["phone"] + r'''\\
+	{\Huge \scshape {''' + (data["basics"]["name"] or 'Name') + r'''}}\\
+	'''+ (data["basics"]["location"]["address"] or '') +r''' $\cdot$ ''' + (data["basics"]["email"] or '') + r''' $\cdot$ ''' + (data["basics"]["phone"] or '') + r'''\\
 \end{center}
-
-
-\header{''' + data["headings"]["education"] + r'''}
 '''
-    for education in data["education"]:
+    if not is_empty_education(data["education"]):
+      s_formatted_body += r'''
+
+\header{''' + (data["headings"]["education"] or 'Education') + r'''}
+        '''
+      for education in data["education"]:
         s_formatted_body += r'''\textbf{''' + education["institution"].replace('&', r'\&') + r'''}\hfill ''' + education["location"].replace('&', r'\&') + r'''\\'''
         s_formatted_body += "\n"
         s_formatted_body += education["studyType"] + r''' ''' + education["area"].replace('&', r'\&') + r''' \textit{GPA: ''' + education["gpa"] + r'''} \hfill ''' + education["startDate"] + r''' - ''' + education['endDate'] + r'''\\'''
@@ -83,57 +85,63 @@ def template_one(data, image_name):
 
 
 
+    if not is_empty_work(data["work"]):
+      s_formatted_body += r'''
 
-    s_formatted_body += r'''
 
-
-\header{''' + data["headings"]['work'] + r'''}
+\header{''' + (data["headings"]['work'] or 'Experience') + r'''}
 \vspace{1mm}
 '''
 
 # Loop over work history to insert job entries
-    for job in data["work"]:
+      for job in data["work"]:
         if "company" in job:
             s_formatted_body += r'''
 \textbf{''' + job["company"].replace('&', r'\&') +r'''} \hfill ''' + job["location"].replace('&', r'\&') +r'''\\
 \textit{''' + job["position"].replace('&', r'\&') +r'''} \hfill ''' + job["startDate"].replace('&', r'\&') +r''' - ''' + job["endDate"].replace('&', r'\&') +r'''\\
 \vspace{-1mm}
+'''
+            if any(item for item in job["highlights"] if item):
+              s_formatted_body += r'''
 \begin{itemize} \itemsep 1pt
 '''
-            duties = "\n".join([f"      \\item {duty}" for duty in job["highlights"]])
-            s_formatted_body += duties + "\n"
-            s_formatted_body += r'''
+            
+              duties = "\n".join([f"      \\item {duty}" for duty in job["highlights"]])
+              s_formatted_body += duties + "\n"
+              s_formatted_body += r'''
 \end{itemize}
 '''
-
-    s_formatted_body += r'''
+    if not is_empty_skills(data["skills"]):
+      s_formatted_body += r'''
 
 \header{''' + data["headings"]['skills'] + r'''}
 \begin{tabular}{ l l }
 '''
-    for skill in data["skills"]:
-        if "name" in skill:
+      for skill in data["skills"]:
+          if "name" in skill:
             s_formatted_body += skill["name"] + r''':  &''' + ", ".join([f" {keys}" for keys in skill["keywords"]]) +r'''\\'''
             s_formatted_body += "\n"
-    s_formatted_body+= r'''\end{tabular}
+      s_formatted_body+= r'''\end{tabular}
 \vspace{2mm}
-
+'''
+    if not is_empty_projects(data["projects"]):
+        s_formatted_body += r'''
 \header{''' + data["headings"]['projects'] + r'''}
 '''
-    for project in data["projects"]:
-        if "name" in project:
+        for project in data["projects"]:
+          if "name" in project:
             s_formatted_body += r'''{\textbf{''' + project["name"] + r'''}} {\sl ''' + ", ".join(project["keywords"]) + r'''} \hfill '''+  project["url"].replace('_', r'\_')+r'''\\
 '''+project["description"] + r'''\\
 \vspace*{2mm}
 '''
 
-
-    s_formatted_body += r'''
+    if not is_empty_awards(data["awards"]):
+      s_formatted_body += r'''
 
 \header{''' + data["headings"]['awards'] + r'''}
 '''
 
-    for award in data["awards"]:
+      for award in data["awards"]:
         if "title" in award:
             s_formatted_body += r'''\textbf{'''+ award["title"]+r'''} \hfill '''+award["awarder"] +r'''\\'''
             s_formatted_body += "\n"
@@ -221,105 +229,122 @@ def template_two(data, image_name):
 
     s_formatted_body = r'''
 \begin{tabular*}{7in}{l@{\extracolsep{\fill}}r}
-	\textbf{\Large ''' + data["basics"]["name"] + r'''} & \textit{''' + data["basics"]["email"] + r''' | ''' + data["basics"]["phone"] + r''' | ''' + data["basics"]["location"]["address"] + r'''}
+    \textbf{\Large ''' + (data["basics"]["name"] or '') + r'''} & \textit{''' + (data["basics"]["email"] or '') + r''' | ''' + (data["basics"]["phone"] or '') + r''' | ''' + data["basics"]["location"]["address"] + r'''}
 \end{tabular*}
+'''
 
-
+    if not is_empty_education(data["education"]):
+        s_formatted_body += r'''
 \resheading{''' + data["headings"]["education"] + r'''}
 \begin{itemize}[leftmargin=*]
 '''
-    for education in data["education"]:
-        s_formatted_body += r'''
-        \item[]
-	        \school
-            {''' + education["institution"].replace('&', r'\&') + r'''}
-            {''' + education["location"].replace('&', r'\&') + r'''\\}
-                {''' + education["studyType"].replace('&', r'\&') + r''' ''' + education["area"].replace('&', r'\&') + r''', GPA:''' + education["gpa"].replace('&', r'\&') + r'''}
-	      	    {''' + education["startDate"].replace('&', r'\&') + r''' | ''' + education["endDate"].replace('&', r'\&') + r'''}
+        for education in data["education"]:
+            s_formatted_body += r'''
+\item[]
+    \school
+    {''' + education["institution"].replace('&', r'\&') + r'''}
+    {''' + education["location"].replace('&', r'\&') + r'''\\}
+    {''' + education["studyType"].replace('&', r'\&') + r''' ''' + education["area"].replace('&', r'\&') + r''', GPA:''' + education["gpa"].replace('&', r'\&') + r'''}
+    {''' + education["startDate"].replace('&', r'\&') + r''' | ''' + education["endDate"].replace('&', r'\&') + r'''}
 '''
-    s_formatted_body += r'''
+        s_formatted_body += r'''
 \end{itemize}
 '''
-    s_formatted_body += r'''
+
+    if not is_empty_work(data["work"]):
+        s_formatted_body += r'''
 \resheading{''' + data["headings"]['work'] + r'''}
 \begin{itemize}[leftmargin=*]
 '''
 
-# Loop over work history to insert job entries
-    for job in data["work"]:
-        if "company" in job:
-            s_formatted_body += r'''
-            \item[]
-	      	      \job
-	      	      {''' + job["company"].replace('&', r'\&') +r'''}
-	      	      {''' + job["location"].replace('&', r'\&') +r'''}
-	      	      {''' + job["position"].replace('&', r'\&') +r'''}
-	      	      {''' + job["startDate"].replace('&', r'\&') +r''' | ''' + job["endDate"].replace('&', r'\&') +r'''}
-	      	      \begin{itemize}
-'''
-            for duties in job["highlights"]:
+        for job in data["work"]:
+            if "company" in job:
                 s_formatted_body += r'''
-                        \item ''' + duties.replace('&', r'\&') +r'''
+\item[]
+    \job
+    {''' + job["company"].replace('&', r'\&') + r'''}
+    {''' + job["location"].replace('&', r'\&') + r'''}
+    {''' + job["position"].replace('&', r'\&') + r'''}
+    {''' + job["startDate"].replace('&', r'\&') + r''' | ''' + job["endDate"].replace('&', r'\&') + r'''}
+    \begin{itemize}
 '''
-            s_formatted_body += r'''
-                \end{itemize}
+                for duties in job["highlights"]:
+                    s_formatted_body += r'''
+    \item ''' + duties.replace('&', r'\&') + r'''
+'''
+                s_formatted_body += r'''
+    \end{itemize}
 '''
 
-    s_formatted_body += r'''
+        s_formatted_body += r'''
 \end{itemize}
+'''
+
+    if not is_empty_skills(data["skills"]):
+        s_formatted_body += r'''
 \resheading{''' + data["headings"]['skills'] + r'''}
 \begin{itemize}[leftmargin=*]
-    \setlength\itemsep{0em}
+\setlength\itemsep{0em}
 '''
-    for skill in data["skills"]:
-        if "name" in skill:
-            s_formatted_body += r'''
-              \item[] \skill{'''+skill["name"]+r'''}{''' + ", ".join([f" {keys}" for keys in skill["keywords"]]) +r'''}
-'''
-    s_formatted_body+= r'''\end{itemize}
-	      \resheading{''' + data["headings"]['projects'] + r'''}
-	      \begin{itemize}[leftmargin=*]
-'''
-    for project in data["projects"]:
-        if "name" in project:
-            s_formatted_body += r'''
-                \item[]
-	      	        \project
-	      	        {''' + project["name"] + r'''}
-	      	        {''' + ", ".join(project["keywords"]) + r'''}
-	      	        {'''+  project["url"].replace('_','\_')+r'''}
-	      	        {\\'''+project["description"] + r'''}
-'''
-
-
-    s_formatted_body += r'''\end{itemize}
-	      \resheading{''' + data["headings"]['awards'] + r'''}
-	      \begin{itemize}[leftmargin=*]
-'''
-
-    for award in data["awards"]:
-        if "title" in award:
-            s_formatted_body += r'''
-                \item[]
-	      	        \award
-	      	        {'''+ award["title"]+r'''}
-	      	        {'''+ award["date"] + r'''}
-	      	        {'''+award["awarder"] +r'''}'''
-            if "summary" in award:
+        for skill in data["skills"]:
+            if "name" in skill:
                 s_formatted_body += r'''
-	      	      {\\'''+ award["summary"].replace('&', r'\&') +r'''}
+\item[] \skill{'''+skill["name"]+r'''}{''' + ", ".join([f" {keys}" for keys in skill["keywords"]]) + r'''}
 '''
-            else:
-                s_formatted_body += r'''
-                {}'''
+        s_formatted_body += r'''
+        \end{itemize}
+        '''
 
-    s_formatted_body+= r'''
+    if not is_empty_projects(data["projects"]):
+        s_formatted_body += r'''
+\resheading{''' + data["headings"]['projects'] + r'''}
+\begin{itemize}[leftmargin=*]
+'''
+
+        for project in data["projects"]:
+            if "name" in project:
+                s_formatted_body += r'''
+\item[]
+    \project
+    {''' + project["name"] + r'''}
+    {''' + ", ".join(project["keywords"]) + r'''}
+    {'''+  project["url"].replace('_','\_')+r'''}
+    {\\'''+project["description"] + r'''}
+'''
+
+        s_formatted_body += r'''
 \end{itemize}
-	      \
-
 '''
 
+    if not is_empty_awards(data["awards"]):
+        s_formatted_body += r'''
+\resheading{''' + data["headings"]['awards'] + r'''}
+\begin{itemize}[leftmargin=*]
+'''
 
+        for award in data["awards"]:
+            if "title" in award:
+                s_formatted_body += r'''
+\item[]
+    \award
+    {'''+ award["title"]+r'''}
+    {'''+ award["date"] + r'''}
+    {'''+award["awarder"] +r'''}'''
+                if "summary" in award:
+                    s_formatted_body += r'''
+    {\\'''+ award["summary"].replace('&', r'\&') +r'''}
+'''
+                else:
+                    s_formatted_body += r'''
+    {}
+'''
+
+        s_formatted_body += r'''
+\end{itemize}
+'''
+    s_formatted_body += r'''
+      \
+'''
 
     return s_formatted_head, s_formatted_body
 
@@ -467,44 +492,46 @@ def template_three(data, image_name):
 
 }\parbox{\dimexpr\linewidth-3.1cm\relax}{
 \begin{tabularx}{\linewidth}{L r}
-  {} & \href{mailto:''' + data["basics"]["email"] + r'''}{''' + data["basics"]["email"] + r'''}\\
-  \textbf{\LARGE ''' + data["basics"]["name"] + r'''} &  ''' + data["basics"]["phone"] + r'''\\
-  {} &  {''' + data["basics"]["location"]["address"] + r'''} \\
+  {} & \href{mailto:''' + (data["basics"]["email"] or ' ') + r'''}{''' + (data["basics"]["email"] or ' ') + r'''}\\
+  \textbf{\LARGE ''' + (data["basics"]["name"] or 'Name') + r'''} &  ''' + (data["basics"]["phone"] or '') + r'''\\
+  {} &  {''' + (data["basics"]["location"]["address"] or '') + r'''} \\
   {} & \ {}
     \end{tabularx}
 }
 
-
+'''
+    if not is_empty_education(data["education"]):
+      s_formatted_body += r'''
 
 % %-----------EDUCATION-----------------
-\section{Education}
+\section{''' + data["headings"]["education"].replace('&',r'\&') + r'''}
 \setlength{\tabcolsep}{5pt} % Default value: 6pt
-
 \small{\begin{tabularx}
 {\dimexpr\textwidth-3mm\relax}{|c|C|c|c|}
-
   \hline
   \textbf{Degree/Certificate } & \textbf{Institute/Board} & \textbf{CGPA/Percentage} & \textbf{Year}\\
 '''
-    for education in data["education"]:
+      for education in data["education"]:
         s_formatted_body += r'''
         \hline
         ''' + education["studyType"].replace('&', r'\&') + r'''  & ''' + education["institution"].replace('&', r'\&') + r''' & ''' + education["gpa"].replace('&', r'\&') + r''' & ''' + education["startDate"].replace('&', r'\&') + r'''-''' + education["endDate"].replace('&', r'\&') + r'''\\
 '''
-    s_formatted_body += r'''
+      s_formatted_body += r'''
   \hline
 \end{tabularx}}
 \vspace{-2mm}
-
+'''
+    if not is_empty_work(data["work"]): 
+      s_formatted_body += r'''
 % %-----------EXPERIENCE-----------------
- \section{Experience}
+ \section{''' + data["headings"]["work"].replace('&',r'\&') + r'''}
    \resumeSubHeadingListStart
 '''
-    for job in data["work"]:
+      for job in data["work"]:
         if "company" in job:
             s_formatted_body += r'''
             \resumeSubheading
-                {''' + job["company"].replace('&', r'\&') +r'''}{''' + job["company"].replace('&', r'\&') +r'''}
+                {''' + job["company"].replace('&', r'\&') +r'''}{''' + job["location"].replace('&', r'\&') +r'''}
                 {''' + job["position"].replace('&', r'\&') +r'''}{''' + job["startDate"].replace('&', r'\&') +r''' - ''' + job["endDate"].replace('&', r'\&') +r'''}
                 \resumeItemListStart
 '''
@@ -515,15 +542,17 @@ def template_three(data, image_name):
             s_formatted_body += r'''
                 \resumeItemListEnd
 '''
-    s_formatted_body += r'''
+      s_formatted_body += r'''
      \resumeSubHeadingListEnd
  \vspace{-5.5mm}
-
-\section{Projects}
+'''
+    if not is_empty_projects(data["projects"]):
+      s_formatted_body += r'''
+\section{''' + data["headings"]["projects"].replace('&',r'\&') + r'''}
 \resumeSubHeadingListStart
 '''
 
-    for project in data["projects"]:
+      for project in data["projects"]:
         if "name" in project:
             s_formatted_body += r'''
                 \resumeProject
@@ -535,38 +564,41 @@ def template_three(data, image_name):
                         \item {'''+project["description"] + r'''}
                     \resumeItemListEnd
 '''
-    s_formatted_body += r'''
+      s_formatted_body += r'''
 
 
 
   \resumeSubHeadingListEnd
 \vspace{-5.5mm}
-
-
-\section{Skills}
+'''
+    if not is_empty_skills(data["skills"]):
+      s_formatted_body += r'''
+\section{''' + data["headings"]["skills"].replace('&',r'\&') + r'''}
 \resumeHeadingSkillStart
 '''
-    for skill in data["skills"]:
+      for skill in data["skills"]:
         if "name" in skill:
             s_formatted_body += r'''
             \resumeSubItem{'''+skill["name"]+r'''}
                 {''' + ", ".join([f" {keys}" for keys in skill["keywords"]]) +r'''}
 '''
 
-    s_formatted_body += r'''
+      s_formatted_body += r'''
 \resumeHeadingSkillEnd
 
-
-\section{Certifications}
+'''
+    if not is_empty_awards(data["awards"]):
+      s_formatted_body += r'''
+\section{''' + data["headings"]["awards"].replace('&',r'\&') + r'''}
 \resumeHeadingSkillStart
 '''
-    for award in data["awards"]:
+      for award in data["awards"]:
         if "title" in award:
             s_formatted_body += r'''
             \resumeSubItem{'''+ award["title"]+r'''}
                 {'''+award["awarder"].replace('&','\&') +r'''}
 '''
-    s_formatted_body += r'''
+      s_formatted_body += r'''
 \resumeHeadingSkillEnd
 '''
     return s_formatted_head, s_formatted_body
@@ -680,34 +712,39 @@ def template_four(data, image_name):
 '''
     s_formatted_body = r'''
 \begin{center}
-  {\Huge \scshape ''' + data["basics"]["name"].replace('&',r'\&') + r'''} \\ \vspace{5pt}
-  \small \raisebox{-0.1\height}\faPhone\ ''' + data["basics"]["phone"].replace('&',r'\&') + r'''~ \href{mailto:''' + data["basics"]["email"].replace('&',r'\&') + r'''}{\raisebox{-0.2\height}\faEnvelope\ {''' + data["basics"]["email"].replace('&',r'\&') + r'''}} ~
-  \href{https://algouniversity.com/accelerator}{\raisebox{-0.2\height}{{''' + data["basics"]["location"]["address"].replace('&',r'\&') + r'''}}}  ~
+  {\Huge \scshape ''' + (data["basics"]["name"].replace('&',r'\&') or 'Name') + r'''} \\ \vspace{5pt}
+  \small \raisebox{-0.1\height}\faPhone\ ''' + (data["basics"]["phone"].replace('&',r'\&') or ' ') + r'''~ \href{mailto:''' + (data["basics"]["email"].replace('&',r'\&') or '') + r'''}{\raisebox{-0.2\height}\faEnvelope\ {''' + (data["basics"]["email"].replace('&',r'\&') or '') + r'''}} ~
+  \href{https://algouniversity.com/accelerator}{\raisebox{-0.2\height}\faMapMarker{{'''+ (data["basics"]["location"]["address"].replace('&',r'\&') or '') + r'''}}}  ~
 
   \vspace{-8pt}
 \end{center}
 
 \vspace{-10pt}
+'''
+    if not is_empty_education(data["education"]):
+      s_formatted_body += r'''
 %-----------EDUCATION-----------
 \section{''' + data["headings"]["education"].replace('&',r'\&') + r'''}
 \resumeSubHeadingListStart
 '''
-    for edu in data["education"]:
+      for edu in data["education"]:
         s_formatted_body += r'''
     \resumeSubheading
     {''' + edu["institution"].replace('&',r'\&') + r'''}{''' + edu["startDate"].replace('&',r'\&') + r''' - ''' + edu["endDate"].replace('&', r'\&') + r'''}{''' + edu["studyType"].replace('&', r'\&') + r''' in ''' + edu["area"].replace('&', r'\&') + r'''}{''' + edu["gpa"].replace('&', r'\&') + r''' cgpa}
     '''
-    s_formatted_body += r'''
+      s_formatted_body += r'''
 \resumeSubHeadingListEnd
 \vspace{-15pt}
-
+'''
+    if not is_empty_work(data["work"]):
+      s_formatted_body += r'''
 
 
 % -----------EXPERIENCE-----------
 \section{''' + data["headings"]["work"].replace('&',r'\&') + r'''}
 \resumeSubHeadingListStart
 '''
-    for work in data["work"]:
+      for work in data["work"]:
         if "company" in work:
           s_formatted_body += r'''
     \resumeSubheading
@@ -722,61 +759,100 @@ def template_four(data, image_name):
     \resumeItemListEnd
 
         '''
-    s_formatted_body += r'''
+      s_formatted_body += r'''
 \resumeSubHeadingListEnd
 \vspace{-16pt}
-
+'''
+    if not is_empty_projects(data["projects"]):
+      s_formatted_body += r'''
 \section{''' + data["headings"]["projects"].replace('&', r'\&') + r'''}
 \vspace{-5pt}
 \resumeSubHeadingListStart'''
 
-    for project in data["projects"]:
-      if "name" in project:
-        s_formatted_body += r'''
+      for project in data["projects"]:
+        if "name" in project:
+          s_formatted_body += r'''
     \resumeProjectHeading{\textbf{''' + project["name"].replace('&', r'\&') + r'''}}{\href{''' + project["url"].replace('_','\_')+r'''}{\underline{''' + project["url"].replace('_','\_')+r'''}}}
     \resumeItemListStart
       \resumeItem{'''+project["description"].replace('&', r'\&') + r'''}'''
 
-        s_formatted_body += r'''
+          s_formatted_body += r'''
     \resumeItemListEnd
 '''
-    s_formatted_body += r'''
+      s_formatted_body += r'''
 \vspace{-13pt}
 
 \resumeSubHeadingListEnd
 \vspace{-3pt}
 
-
+'''
+    if not is_empty_skills(data["skills"]):
+      s_formatted_body += r'''
 %
 %-----------PROGRAMMING SKILLS-----------
 \section{''' + data["headings"]["skills"].replace('&', r'\&') + r'''}
 \begin{itemize}[leftmargin=0.15in, label={}]
   \item{
 '''
-    for skill in data["skills"]:
+      for skill in data["skills"]:
         if "name" in skill:
           s_formatted_body += r'''
         \textbf{'''+skill["name"]+r'''}{: ''' + ", ".join([f" {keys}" for keys in skill["keywords"]]) +r'''} \\'''
-    s_formatted_body += r'''
+      s_formatted_body += r'''
     }
 
 \end{itemize}
 \vspace{-15pt}
-
+'''
+    if not is_empty_awards(data["awards"]):
+      s_formatted_body += r'''
 \section{''' + data["headings"]["awards"].replace('&', r'\&') + r'''}
 \resumeSubHeadingListStart
 '''
-    for award in data["awards"]:
-      if "title" in award:
-        s_formatted_body += r'''
+      for award in data["awards"]:
+        if "title" in award:
+          s_formatted_body += r'''
   \resumeSubheading{'''+ award["title"].replace('&','\&') +r'''}{'''+ award["date"].replace('&','\&') +r'''}{'''+ award["awarder"].replace('&','\&') +r'''}{}'''
         if "summary" in award:
-           s_formatted_body += r'''
+          s_formatted_body += r'''
   \resumeItemListStart
     \resumeItem{'''+ award["summary"].replace('&','\&') +r'''}
   \resumeItemListEnd'''
 
-    s_formatted_body += r'''
+      s_formatted_body += r'''
 \resumeSubHeadingListEnd
 '''
     return s_formatted_head, s_formatted_body
+
+
+def is_empty_education(education):
+    for item in education:
+        for key, value in item.items():
+            if value != "":
+                return False
+    return True
+def is_empty_work(work):
+    for item in work:
+        for key, value in item.items():
+            if isinstance(value, list):
+                if any(sub_value != "" for sub_value in value):
+                    return False
+            else:
+                if value != "":
+                    return False
+    return True
+def is_empty_skills(skills):
+    for skill in skills:
+        if skill["name"] != "" or any(keyword != "" for keyword in skill["keywords"]):
+            return False
+    return True
+def is_empty_projects(projects):
+    for project in projects:
+        if project["name"] != "" or project["description"] != "" or any(keyword != "" for keyword in project["keywords"]):
+            return False
+    return True
+def is_empty_awards(awards):
+    for award in awards:
+        if award["awarder"] != "" or award["title"] != "" or award["date"] != "" or award["summary"] != "":
+            return False
+    return True
