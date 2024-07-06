@@ -9,7 +9,6 @@ class AccessKeyAuthentication(BaseAuthentication):
             raise AuthenticationFailed('Access key missing')
 
         if access_key != settings.ACCESS_KEY:
-            print(settings.ACCESS_KEY)
             raise AuthenticationFailed('Invalid access key')
 
         return (AnonymousUser(), None)
