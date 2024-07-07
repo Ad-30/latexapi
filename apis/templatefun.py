@@ -106,7 +106,7 @@ def template_one(data, image_name):
 \begin{itemize} \itemsep 1pt
 '''
             
-              duties = "\n".join([f"      \\item {duty}" for duty in job["highlights"]])
+              duties = "\n".join([f"      \\item {duty}" for duty in job["highlights"] if duty])
               s_formatted_body += duties + "\n"
               s_formatted_body += r'''
 \end{itemize}
@@ -119,7 +119,7 @@ def template_one(data, image_name):
 '''
       for skill in data["skills"]:
           if "name" in skill:
-            s_formatted_body += skill["name"] + r''':  &''' + ", ".join([f" {keys}" for keys in skill["keywords"]]) +r'''\\'''
+            s_formatted_body += skill["name"] + r''':  &''' + ", ".join([f" {keys}" for keys in skill["keywords"] if keys is not None and keys != '' ]) +r'''\\'''
             s_formatted_body += "\n"
       s_formatted_body+= r'''\end{tabular}
 \vspace{2mm}
@@ -130,7 +130,7 @@ def template_one(data, image_name):
 '''
         for project in data["projects"]:
           if "name" in project:
-            s_formatted_body += r'''{\textbf{''' + project["name"] + r'''}} {\sl ''' + ", ".join(project["keywords"]) + r'''} \hfill '''+  project["url"].replace('_', r'\_')+r'''\\
+            s_formatted_body += r'''{\textbf{''' + project["name"] + r'''}} {\sl ''' + ", ".join([keyword for keyword in project.get("keywords", []) if keyword is not None and keyword != '']) + r'''} \hfill '''+  project["url"].replace('_', r'\_')+r'''\\
 '''+project["description"] + r'''\\
 \vspace*{2mm}
 '''
@@ -269,9 +269,11 @@ def template_two(data, image_name):
     \begin{itemize}
 '''
                 for duties in job["highlights"]:
+                  if duties:
                     s_formatted_body += r'''
     \item ''' + duties.replace('&', r'\&') + r'''
 '''
+                    
                 s_formatted_body += r'''
     \end{itemize}
 '''
@@ -289,7 +291,7 @@ def template_two(data, image_name):
         for skill in data["skills"]:
             if "name" in skill:
                 s_formatted_body += r'''
-\item[] \skill{'''+skill["name"]+r'''}{''' + ", ".join([f" {keys}" for keys in skill["keywords"]]) + r'''}
+\item[] \skill{'''+skill["name"]+r'''}{''' + ", ".join([f" {keys}"   for keys in skill["keywords"] if keys is not None and keys != '' ]) + r'''}
 '''
         s_formatted_body += r'''
         \end{itemize}
@@ -307,7 +309,7 @@ def template_two(data, image_name):
 \item[]
     \project
     {''' + project["name"] + r'''}
-    {''' + ", ".join(project["keywords"]) + r'''}
+    {''' + ", ".join([keyword for keyword in project.get("keywords", []) if keyword is not None and keyword != '']) + r'''}
     {'''+  project["url"].replace('_','\_')+r'''}
     {\\'''+project["description"] + r'''}
 '''
@@ -536,7 +538,8 @@ def template_three(data, image_name):
                 \resumeItemListStart
 '''
             for duties in job["highlights"]:
-                s_formatted_body += r'''
+                if duties:
+                  s_formatted_body += r'''
                 \item {''' + duties.replace('&', r'\&') +r'''}
 '''
             s_formatted_body += r'''
@@ -557,7 +560,7 @@ def template_three(data, image_name):
             s_formatted_body += r'''
                 \resumeProject
                     {''' + project["name"] + r'''}
-                    {''' + ", ".join(project["keywords"]) + r'''}
+                    {''' + ", ".join([keyword for keyword in project.get("keywords", []) if keyword is not None and keyword != '']) + r'''}
                     {\href{'''+  project["url"].replace('_','\_')+r'''}{'''+  project["url"].replace('_','\_')+r'''}}
                     {}
                     \resumeItemListStart
@@ -580,7 +583,7 @@ def template_three(data, image_name):
         if "name" in skill:
             s_formatted_body += r'''
             \resumeSubItem{'''+skill["name"]+r'''}
-                {''' + ", ".join([f" {keys}" for keys in skill["keywords"]]) +r'''}
+                {''' + ", ".join([f" {keys}" for keys in skill["keywords"] if keys is not None and keys != '' ]) +r'''}
 '''
 
       s_formatted_body += r'''
@@ -753,7 +756,8 @@ def template_four(data, image_name):
     \resumeItemListStart
     '''
           for item in work["highlights"]:
-            s_formatted_body += r'''
+            if item:
+              s_formatted_body += r'''
         \resumeItem{''' + item.replace('&', r'\&') + r'''}'''
           s_formatted_body += r'''
     \resumeItemListEnd
@@ -797,7 +801,7 @@ def template_four(data, image_name):
       for skill in data["skills"]:
         if "name" in skill:
           s_formatted_body += r'''
-        \textbf{'''+skill["name"]+r'''}{: ''' + ", ".join([f" {keys}" for keys in skill["keywords"]]) +r'''} \\'''
+        \textbf{'''+skill["name"]+r'''}{: ''' + ", ".join([f" {keys}" for keys in skill["keywords"] if keys is not None and keys != '' ]) +r'''} \\'''
       s_formatted_body += r'''
     }
 
