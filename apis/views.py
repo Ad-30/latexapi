@@ -37,7 +37,6 @@ class LaTeXToPDFView(APIView):
                 try:
                     image_name = image_url.split('/')[-1].replace('%', '')
                     image_path = os.path.join(settings.BASE_DIR, 'apis', 'pdfs', image_name)
-                    print(image_url)
                     try:
                         urllib.request.urlretrieve(image_url, image_path)
                     except:
@@ -105,4 +104,3 @@ class LaTeXToPDFView(APIView):
         
             
         
-
