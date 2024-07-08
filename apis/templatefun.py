@@ -67,19 +67,19 @@ def template_one(data, image_name):
 
 \vspace*{-10pt}
 \begin{center}
-	{\Huge \scshape {''' + (data["basics"]["name"] or 'Name') + r'''}}\\
-	'''+ (data["basics"]["location"]["address"] or '') +r''' $\cdot$ ''' + (data["basics"]["email"] or '') + r''' $\cdot$ ''' + (data["basics"]["phone"] or '') + r'''\\
+	{\Huge \scshape {''' + (data["basics"]["name"].replace('%', r'\%').replace('&', r'\&')or 'Name') + r'''}}\\
+	'''+ (data["basics"]["location"]["address"].replace('%', r'\%').replace('&', r'\&')or '') +r''' $\cdot$ ''' + (data["basics"]["email"].replace('%', r'\%').replace('&', r'\&')or '') + r''' $\cdot$ ''' + (data["basics"]["phone"].replace('%', r'\%').replace('&', r'\&')or '') + r'''\\
 \end{center}
 '''
     if not is_empty_education(data["education"]):
       s_formatted_body += r'''
 
-\header{''' + (data["headings"]["education"] or 'Education') + r'''}
+\header{''' + (data["headings"]["education"].replace('%', r'\%').replace('&', r'\&')or 'Education') + r'''}
         '''
       for education in data["education"]:
         s_formatted_body += r'''\textbf{''' + education["institution"].replace('%', r'\%').replace('&', r'\&') + r'''}\hfill ''' + education["location"].replace('&', r'\&') + r'''\\'''
         s_formatted_body += "\n"
-        s_formatted_body += education["studyType"] + r''' ''' + education["area"].replace('%', r'\%').replace('&', r'\&') + r''' \textit{GPA: ''' + education["gpa"] + r'''} \hfill ''' + education["startDate"] + r''' - ''' + education['endDate'] + r'''\\'''
+        s_formatted_body += education["studyType"].replace('%', r'\%').replace('&', r'\&')+ r''' ''' + education["area"].replace('%', r'\%').replace('&', r'\&') + r''' \textit{GPA: ''' + education["gpa"].replace('%', r'\%').replace('&', r'\&')+ r'''} \hfill ''' + education["startDate"].replace('%', r'\%').replace('&', r'\&')+ r''' - ''' + education['endDate'].replace('%', r'\%').replace('&', r'\&')+ r'''\\'''
         s_formatted_body += "\n"
         s_formatted_body += r'''\vspace{2mm}'''
 
@@ -89,7 +89,7 @@ def template_one(data, image_name):
       s_formatted_body += r'''
 
 
-\header{''' + (data["headings"]['work'] or 'Experience') + r'''}
+\header{''' + (data["headings"]['work'].replace('%', r'\%').replace('&', r'\&')or 'Experience') + r'''}
 \vspace{1mm}
 '''
 
@@ -101,12 +101,12 @@ def template_one(data, image_name):
 \textit{''' + job["position"].replace('%', r'\%').replace('&', r'\&') +r'''} \hfill ''' + job["startDate"].replace('%', r'\%').replace('&', r'\&') +r''' - ''' + job["endDate"].replace('%', r'\%').replace('&', r'\&') +r'''\\
 \vspace{-1mm}
 '''
-            if any(item for item in job["highlights"] if item):
+            if any(item for item in job["highlights"].replace('%', r'\%').replace('&', r'\&')if item):
               s_formatted_body += r'''
 \begin{itemize} \itemsep 1pt
 '''
             
-              duties = "\n".join([f"      \\item {duty}" for duty in job["highlights"] if duty])
+              duties = "\n".join([f"      \\item {duty}" for duty in job["highlights"].replace('%', r'\%').replace('&', r'\&')if duty])
               s_formatted_body += duties + "\n"
               s_formatted_body += r'''
 \end{itemize}
@@ -114,40 +114,40 @@ def template_one(data, image_name):
     if not is_empty_skills(data["skills"]):
       s_formatted_body += r'''
 
-\header{''' + data["headings"]['skills'] + r'''}
+\header{''' + data["headings"]['skills'].replace('%', r'\%').replace('&', r'\&')+ r'''}
 \begin{tabular}{ l l }
 '''
       for skill in data["skills"]:
           if "name" in skill:
-            s_formatted_body += skill["name"] + r''':  &''' + ", ".join([f" {keys}" for keys in skill["keywords"] if keys is not None and keys != '' ]) +r'''\\'''
+            s_formatted_body += skill["name"].replace('%', r'\%').replace('&', r'\&')+ r''':  &''' + ", ".join([f" {keys}" for keys in skill["keywords"] if keys is not None and keys != '' ]) +r'''\\'''
             s_formatted_body += "\n"
       s_formatted_body+= r'''\end{tabular}
 \vspace{2mm}
 '''
     if not is_empty_projects(data["projects"]):
         s_formatted_body += r'''
-\header{''' + data["headings"]['projects'] + r'''}
+\header{''' + data["headings"]['projects'].replace('%', r'\%').replace('&', r'\&')+ r'''}
 '''
         for project in data["projects"]:
           if "name" in project:
-            s_formatted_body += r'''{\textbf{''' + project["name"] + r'''}} {\sl ''' + ", ".join([keyword for keyword in project.get("keywords", []) if keyword is not None and keyword != '']) + r'''} \hfill '''+  project["url"].replace('_', r'\_')+r'''\\
-'''+project["description"] + r'''\\
+            s_formatted_body += r'''{\textbf{''' + project["name"].replace('%', r'\%').replace('&', r'\&')+ r'''}} {\sl ''' + ", ".join([keyword for keyword in project.get("keywords", []) if keyword is not None and keyword != '']) + r'''} \hfill '''+  project["url"].replace('_', r'\_')+r'''\\
+'''+project["description"].replace('%', r'\%').replace('&', r'\&')+ r'''\\
 \vspace*{2mm}
 '''
 
     if not is_empty_awards(data["awards"]):
       s_formatted_body += r'''
 
-\header{''' + data["headings"]['awards'] + r'''}
+\header{''' + data["headings"]['awards'].replace('%', r'\%').replace('&', r'\&')+ r'''}
 '''
 
       for award in data["awards"]:
         if "title" in award:
-            s_formatted_body += r'''\textbf{'''+ award["title"]+r'''} \hfill '''+award["awarder"] +r'''\\'''
+            s_formatted_body += r'''\textbf{'''+ award["title"]+r'''} \hfill '''+award["awarder"].replace('%', r'\%').replace('&', r'\&')+r'''\\'''
             s_formatted_body += "\n"
             if "summary" in award:
                 s_formatted_body += award["summary"].replace('%', r'\%').replace('&', r'\&')
-            s_formatted_body += r''' \hfill '''+ award["date"] + r'''\\'''
+            s_formatted_body += r''' \hfill '''+ award["date"].replace('%', r'\%').replace('&', r'\&')+ r'''\\'''
             s_formatted_body += "\n"
             s_formatted_body += r'''\vspace*{2mm}'''
             s_formatted_body += "\n"
@@ -229,13 +229,13 @@ def template_two(data, image_name):
 
     s_formatted_body = r'''
 \begin{tabular*}{7in}{l@{\extracolsep{\fill}}r}
-    \textbf{\Large ''' + (data["basics"]["name"] or '') + r'''} & \textit{''' + (data["basics"]["email"] or '') + r''' | ''' + (data["basics"]["phone"] or '') + r''' | ''' + data["basics"]["location"]["address"] + r'''}
+    \textbf{\Large ''' + (data["basics"]["name"].replace('%', r'\%').replace('&', r'\&')or '') + r'''} & \textit{''' + (data["basics"]["email"].replace('%', r'\%').replace('&', r'\&')or '') + r''' | ''' + (data["basics"]["phone"].replace('%', r'\%').replace('&', r'\&')or '') + r''' | ''' + data["basics"]["location"]["address"].replace('%', r'\%').replace('&', r'\&')+ r'''}
 \end{tabular*}
 '''
 
     if not is_empty_education(data["education"]):
         s_formatted_body += r'''
-\resheading{''' + data["headings"]["education"] + r'''}
+\resheading{''' + data["headings"]["education"].replace('%', r'\%').replace('&', r'\&')+ r'''}
 \begin{itemize}[leftmargin=*]
 '''
         for education in data["education"]:
@@ -253,7 +253,7 @@ def template_two(data, image_name):
 
     if not is_empty_work(data["work"]):
         s_formatted_body += r'''
-\resheading{''' + data["headings"]['work'] + r'''}
+\resheading{''' + data["headings"]['work'].replace('%', r'\%').replace('&', r'\&')+ r'''}
 \begin{itemize}[leftmargin=*]
 '''
 
@@ -284,7 +284,7 @@ def template_two(data, image_name):
 
     if not is_empty_skills(data["skills"]):
         s_formatted_body += r'''
-\resheading{''' + data["headings"]['skills'] + r'''}
+\resheading{''' + data["headings"]['skills'].replace('%', r'\%').replace('&', r'\&')+ r'''}
 \begin{itemize}[leftmargin=*]
 \setlength\itemsep{0em}
 '''
@@ -299,7 +299,7 @@ def template_two(data, image_name):
 
     if not is_empty_projects(data["projects"]):
         s_formatted_body += r'''
-\resheading{''' + data["headings"]['projects'] + r'''}
+\resheading{''' + data["headings"]['projects'].replace('%', r'\%').replace('&', r'\&')+ r'''}
 \begin{itemize}[leftmargin=*]
 '''
 
@@ -308,10 +308,10 @@ def template_two(data, image_name):
                 s_formatted_body += r'''
 \item[]
     \project
-    {''' + project["name"] + r'''}
-    {''' + ", ".join([keyword for keyword in project.get("keywords", []) if keyword is not None and keyword != '']) + r'''}
-    {'''+  project["url"].replace('_','\_')+r'''}
-    {\\'''+project["description"] + r'''}
+    {''' + project["name"].replace('%', r'\%') + r'''}
+    {''' + ", ".join([keyword.replace('%', r'\%') for keyword in project.get("keywords", []) if keyword is not None and keyword != '']) + r'''}
+    {'''+  project["url"].replace('_','\_').replace('%', r'\%')+r'''}
+    {\\'''+project["description"].replace('%', r'\%') + r'''}
 '''
 
         s_formatted_body += r'''
@@ -320,7 +320,7 @@ def template_two(data, image_name):
 
     if not is_empty_awards(data["awards"]):
         s_formatted_body += r'''
-\resheading{''' + data["headings"]['awards'] + r'''}
+\resheading{''' + data["headings"]['awards'].replace('%', r'\%') + r'''}
 \begin{itemize}[leftmargin=*]
 '''
 
@@ -329,9 +329,9 @@ def template_two(data, image_name):
                 s_formatted_body += r'''
 \item[]
     \award
-    {'''+ award["title"]+r'''}
-    {'''+ award["date"] + r'''}
-    {'''+award["awarder"] +r'''}'''
+    {'''+ award["title"].replace('%', r'\%')+r'''}
+    {'''+ award["date"].replace('%', r'\%') + r'''}
+    {'''+award["awarder"].replace('%', r'\%') +r'''}'''
                 if "summary" in award:
                     s_formatted_body += r'''
     {\\'''+ award["summary"].replace('%', r'\%').replace('&', r'\&') +r'''}
@@ -496,9 +496,9 @@ def template_three(data, image_name):
 
 }\parbox{\dimexpr\linewidth-3.1cm\relax}{
 \begin{tabularx}{\linewidth}{L r}
-  {} & \href{mailto:''' + (data["basics"]["email"] or ' ') + r'''}{''' + (data["basics"]["email"] or ' ') + r'''}\\
-  \textbf{\LARGE ''' + (data["basics"]["name"] or 'Name') + r'''} &  ''' + (data["basics"]["phone"] or '') + r'''\\
-  {} &  {''' + (data["basics"]["location"]["address"] or '') + r'''} \\
+  {} & \href{mailto:''' + (data["basics"]["email"].replace('%', r'\%').replace('&', r'\&')or ' ') + r'''}{''' + (data["basics"]["email"].replace('%', r'\%').replace('&', r'\&')or ' ') + r'''}\\
+  \textbf{\LARGE ''' + (data["basics"]["name"].replace('%', r'\%').replace('&', r'\&')or 'Name') + r'''} &  ''' + (data["basics"]["phone"].replace('%', r'\%').replace('&', r'\&')or '') + r'''\\
+  {} &  {''' + (data["basics"]["location"]["address"].replace('%', r'\%').replace('&', r'\&')or '') + r'''} \\
   {} & \ {}
     \end{tabularx}
 }
@@ -561,12 +561,12 @@ def template_three(data, image_name):
         if "name" in project:
             s_formatted_body += r'''
                 \resumeProject
-                    {''' + project["name"] + r'''}
+                    {''' + project["name"].replace('%', r'\%').replace('&', r'\&')+ r'''}
                     {''' + ", ".join([keyword for keyword in project.get("keywords", []) if keyword is not None and keyword != '']) + r'''}
                     {\href{'''+  project["url"].replace('_','\_')+r'''}{'''+  project["url"].replace('_','\_')+r'''}}
                     {}
                     \resumeItemListStart
-                        \item {'''+project["description"] + r'''}
+                        \item {'''+project["description"].replace('%', r'\%').replace('&', r'\&')+ r'''}
                     \resumeItemListEnd
 '''
       s_formatted_body += r'''
@@ -1041,7 +1041,7 @@ def template_five(data, image_name):
                 s_formatted_body += r'''
     \resumeProject
       {''' + project["name"].replace('%', r'\%').replace('&', r'\&') + r'''} %Project Name
-      {'''+ ", ".join([key for key in project['keywords'] if key])+r'''
+      {'''+ ", ".join([key for key in project['keywords'].replace('%', r'\%').replace('&', r'\&')if key])+r'''
 } %Project Name, Location Name
       {''' + project["url"].replace('_','\_')+r'''} %Event Dates
 
