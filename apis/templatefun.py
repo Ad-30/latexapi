@@ -997,7 +997,7 @@ def template_five(data, image_name):
             s_formatted_body += r'''
     \resumeSubheading
       {''' + work["company"].replace('&',r'\&') + r'''}{''' + work["startDate"].replace('&',r'\&') + r''' - ''' + work["endDate"].replace('&',r'\&') + r'''}
-      {''' + work["position"].replace('&',r'\&') + r'''}{2023}
+      {''' + work["position"].replace('&',r'\&') + r'''}{''' + work["location"].replace('&',r'\&') + r'''}
       \resumeItemListStart
 '''
             for item in work['highlights']:
@@ -1075,6 +1075,169 @@ def template_five(data, image_name):
 '''
     return s_formatted_head, s_formatted_body
 
+def template_six(data, image_name):
+    s_formatted_head = r'''
+\usepackage{textcomp}
+\usepackage{graphicx}
+\fontdir[fonts/]
+
+\newcommand*{\sectiondir}{resume/}
+
+\colorlet{awesome}{awesome-red}
+'''
+    name = (data["basics"]["name"].replace('&',r'\&') or 'Name')
+    name_list = name.split()
+    first_name = name_list[0] if len(name_list) > 0 else ''
+    last_name = name_list[1] if len(name_list) > 1 else ''
+    s_formatted_body = r'''
+\begin{center}
+    \begin{minipage}[c]{0.29\textwidth}
+    \begin{flushleft}
+        \includegraphics[width=2.5cm]{'''+ image_name +r'''} % Adjust the width as needed
+    \end{flushleft}
+    \end{minipage}
+    \begin{minipage}[c]{0.7\textwidth}
+        \begin{flushright}
+        {\headerfirstnamestyle{'''+ first_name +r'''} \headerlastnamestyle{'''+ last_name +r'''} \par}
+        \vspace{2mm}
+        \faEnvelope\ \href{mailto:''' + (data["basics"]["email"].replace('&',r'\&') or '') + r'''}{''' + (data["basics"]["email"].replace('&',r'\&') or '') + r'''} | {\faMobile\ ''' + (data["basics"]["phone"].replace('&',r'\&') or ' ') + r'''} | {\faMapMarker\ '''+ (data["basics"]["location"]["address"].replace('&',r'\&') or '') + r'''} 
+        \end{flushright}
+    \end{minipage}
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Summary
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\cvsection{Summary}
+
+%\begin{cventries}
+
+	%\cventry
+	%{}
+	%{}
+	%{}
+	%{}
+	%{Passionate and dedicated Computer Science and Engineering student with a strong academic record and hands-on experience in web development, machine learning, and software engineering. Proven ability to create innovative solutions to complex problems, with a focus on enhancing user experience and improving operational efficiency. Looking to leverage my skills and knowledge in a challenging and dynamic environment.}
+	
+%\end{cventries}
+'''
+##############################################
+#               Education
+##############################################
+    if not is_empty_education(data["education"]):
+        s_formatted_body += r'''
+\cvsection{''' + data["headings"]["education"].replace('&',r'\&') + r'''}
+\begin{cventries}
+'''
+        for edu in data["education"]:
+            s_formatted_body += r'''
+	\cventry
+	{''' + edu["studyType"].replace('&', r'\&') + r''' in ''' + edu["area"].replace('&', r'\&') + r'''}
+	{''' + edu["institution"].replace('&',r'\&') + r'''}
+	{''' + edu["location"].replace('&', r'\&') + r'''}
+	{''' + edu["startDate"].replace('&',r'\&') + r'''-''' + edu["endDate"].replace('&', r'\&') + r'''}
+	{GPA: ''' + edu["gpa"].replace('&', r'\&') + r'''}'''
+        s_formatted_body += r'''
+\end{cventries}
+
+\vspace{-2mm}
+'''
+##############################################
+#               Work Experience
+##############################################
+    if not is_empty_work(data["work"]):
+        s_formatted_body += r'''
+\cvsection{''' + data["headings"]["work"].replace('&',r'\&') + r'''}
+\begin{cventries}
+'''
+        for work in data["work"]:
+            if 'company' in work:
+                s_formatted_body += r'''
+	\cventry
+	{''' + work["position"].replace('&',r'\&') + r'''}
+	{''' + work["company"].replace('&',r'\&') + r'''}
+	{''' + work["location"].replace('&',r'\&') + r'''}
+	{''' + work["startDate"].replace('&',r'\&') + r''' - ''' + work["endDate"].replace('&',r'\&') + r'''}
+	{\begin{cvitems}'''
+                for item in work['highlights']:
+                    if item:
+                        s_formatted_body += r'''
+        \item {''' + item.replace('&', r'\&') + r'''}'''
+                s_formatted_body += r'''
+	\end{cvitems}}
+'''
+        s_formatted_body += r'''
+\end{cventries}
+'''
+##############################################
+#               Skills
+##############################################
+
+    if not is_empty_skills(data["skills"]):
+        s_formatted_body += r'''
+\cvsection{''' + data["headings"]["skills"].replace('&', r'\&') + r'''}
+\begin{cventries}
+	\cventry
+	{}
+	{\def\arraystretch{1.15}{\begin{tabular}{ l l }'''
+        for skill in data["skills"]:
+            if "name" in skill:
+                s_formatted_body += r'''
+                    '''+skill["name"]+r''':  & {\skill{ ''' + ", ".join([f" {keys}" for keys in skill["keywords"] if keys is not None and keys != '' ]) +r'''}} \\'''
+        s_formatted_body += r'''
+		\end{tabular}}}
+	{}
+	{}
+	{}
+\end{cventries}
+
+\vspace{-7mm}
+'''
+##############################################
+#              Projects
+##############################################
+    if not is_empty_projects(data["projects"]):
+        s_formatted_body += r'''
+\cvsection{''' + data["headings"]["projects"].replace('&', r'\&') + r'''}
+\begin{cventries}
+'''
+        for project in data["projects"]:
+            if "name" in project:
+                s_formatted_body += r'''
+	\cventry
+	{'''+project["description"].replace('&', r'\&') + r'''}
+	{''' + project["name"].replace('&', r'\&') + r'''}
+	{'''+ ", ".join([key for key in project['keywords'] if key])+r'''}
+	{''' + project["url"].replace('_','\_')+r'''}
+	{}
+	
+	\vspace{-5mm}
+'''
+        s_formatted_body += r'''	
+\end{cventries}
+'''
+##############################################
+#              Courses
+##############################################
+    if not is_empty_awards(data["awards"]):
+        s_formatted_body += r'''
+\cvsection{''' + data["headings"]["awards"].replace('&', r'\&') + r'''}
+\begin{cvhonors}
+'''
+        for award in data["awards"]:
+            if "title" in award:
+                s_formatted_body += r'''
+	\cvhonor
+	{'''+ award["title"].replace('&','\&') +r'''}
+	{'''+ award["summary"].replace('&','\&') +r'''}
+	{'''+ award["awarder"].replace('&','\&') +r'''}
+	{'''+ award["date"].replace('&','\&') +r'''}
+   '''
+        s_formatted_body += r'''
+\end{cvhonors}
+
+'''
+    return s_formatted_head, s_formatted_body
 
 def is_empty_education(education):
     for item in education:

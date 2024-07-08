@@ -23,14 +23,13 @@ class LaTeXToPDFView(APIView):
         try:
             image_name = None
             applicant_data = json.loads(request.POST.get('applicantData', '{}'))
-            # print(request.POST.get('imageURL'))
             if not applicant_data:
                 return Response({'error': 'Json data required'}, status=400)
 
             if 'selectedTemplate' not in applicant_data:
                 return Response({'error': 'Selected template not provided'}, status=400)
 
-            if applicant_data["selectedTemplate"] in [3, 5]:
+            if applicant_data["selectedTemplate"] in [3, 5, 6]:
                 image_url = request.POST.get('imageURL')
                 if not image_url:
                     return Response({'error': 'Image URL required for selected template 3'}, status=400)
@@ -68,13 +67,20 @@ class LaTeXToPDFView(APIView):
                         doc_head, doc_body = template_four(applicant_data, image_name)
                     elif applicant_data["selectedTemplate"] == 5:
                         doc_head, doc_body = template_five(applicant_data, image_name)
+                    elif applicant_data["selectedTemplate"] == 6:
+                        doc_head, doc_body = template_six(applicant_data, image_name)
                     else:
                         return Response({'error': 'Selected Template Does Not Exist'}, status=400)
+                    if applicant_data["selectedTemplate"] == 6:
+                        doc = Document(documentclass=NoEscape('awesome-cv'))
                     doc.preamble.append(NoEscape(doc_head))
                     doc.append(NoEscape(doc_body))
                     pdf_name = f"resume_{uuid4()}"
                     pdf_path = os.path.join(settings.BASE_DIR, 'apis', 'pdfs', pdf_name)
-                    doc.generate_pdf(pdf_path, clean_tex=True)
+                    if applicant_data["selectedTemplate"] == 6:
+                        doc.generate_pdf(pdf_path, compiler='xelatex', clean_tex=True)
+                    else:
+                        doc.generate_pdf(pdf_path, clean_tex=True)
                     return pdf_name
                 except Exception as e:
                     return Response({'error': f'Error generating PDF: {str(e)}'}, status=500)
@@ -88,7 +94,7 @@ class LaTeXToPDFView(APIView):
                 try:
                     file = os.path.join(settings.BASE_DIR, 'apis', 'pdfs', pdf_name_or_response + pdf_ex)
                     response = FileResponse(open(file, 'rb'), as_attachment=True, filename="resume.pdf")
-                    if applicant_data["selectedTemplate"] in [3, 5]:
+                    if applicant_data["selectedTemplate"] in [3, 5, 6]:
                         image_path = os.path.join(settings.BASE_DIR, 'apis', 'pdfs', image_name)
                         os.remove(image_path)
                     os.remove(file)
