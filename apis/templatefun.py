@@ -77,9 +77,9 @@ def template_one(data, image_name):
 \header{''' + (data["headings"]["education"] or 'Education') + r'''}
         '''
       for education in data["education"]:
-        s_formatted_body += r'''\textbf{''' + education["institution"].replace('&', r'\&') + r'''}\hfill ''' + education["location"].replace('&', r'\&') + r'''\\'''
+        s_formatted_body += r'''\textbf{''' + education["institution"].replace('%', r'\%').replace('&', r'\&') + r'''}\hfill ''' + education["location"].replace('&', r'\&') + r'''\\'''
         s_formatted_body += "\n"
-        s_formatted_body += education["studyType"] + r''' ''' + education["area"].replace('&', r'\&') + r''' \textit{GPA: ''' + education["gpa"] + r'''} \hfill ''' + education["startDate"] + r''' - ''' + education['endDate'] + r'''\\'''
+        s_formatted_body += education["studyType"] + r''' ''' + education["area"].replace('%', r'\%').replace('&', r'\&') + r''' \textit{GPA: ''' + education["gpa"] + r'''} \hfill ''' + education["startDate"] + r''' - ''' + education['endDate'] + r'''\\'''
         s_formatted_body += "\n"
         s_formatted_body += r'''\vspace{2mm}'''
 
@@ -97,8 +97,8 @@ def template_one(data, image_name):
       for job in data["work"]:
         if "company" in job:
             s_formatted_body += r'''
-\textbf{''' + job["company"].replace('&', r'\&') +r'''} \hfill ''' + job["location"].replace('&', r'\&') +r'''\\
-\textit{''' + job["position"].replace('&', r'\&') +r'''} \hfill ''' + job["startDate"].replace('&', r'\&') +r''' - ''' + job["endDate"].replace('&', r'\&') +r'''\\
+\textbf{''' + job["company"].replace('%', r'\%').replace('&', r'\&') +r'''} \hfill ''' + job["location"].replace('%', r'\%').replace('&', r'\&') +r'''\\
+\textit{''' + job["position"].replace('%', r'\%').replace('&', r'\&') +r'''} \hfill ''' + job["startDate"].replace('%', r'\%').replace('&', r'\&') +r''' - ''' + job["endDate"].replace('%', r'\%').replace('&', r'\&') +r'''\\
 \vspace{-1mm}
 '''
             if any(item for item in job["highlights"] if item):
@@ -146,7 +146,7 @@ def template_one(data, image_name):
             s_formatted_body += r'''\textbf{'''+ award["title"]+r'''} \hfill '''+award["awarder"] +r'''\\'''
             s_formatted_body += "\n"
             if "summary" in award:
-                s_formatted_body += award["summary"].replace('&', r'\&')
+                s_formatted_body += award["summary"].replace('%', r'\%').replace('&', r'\&')
             s_formatted_body += r''' \hfill '''+ award["date"] + r'''\\'''
             s_formatted_body += "\n"
             s_formatted_body += r'''\vspace*{2mm}'''
@@ -242,10 +242,10 @@ def template_two(data, image_name):
             s_formatted_body += r'''
 \item[]
     \school
-    {''' + education["institution"].replace('&', r'\&') + r'''}
-    {''' + education["location"].replace('&', r'\&') + r'''\\}
-    {''' + education["studyType"].replace('&', r'\&') + r''' ''' + education["area"].replace('&', r'\&') + r''', GPA:''' + education["gpa"].replace('&', r'\&') + r'''}
-    {''' + education["startDate"].replace('&', r'\&') + r''' | ''' + education["endDate"].replace('&', r'\&') + r'''}
+    {''' + education["institution"].replace('%', r'\%').replace('&', r'\&') + r'''}
+    {''' + education["location"].replace('%', r'\%').replace('&', r'\&') + r'''\\}
+    {''' + education["studyType"].replace('%', r'\%').replace('&', r'\&') + r''' ''' + education["area"].replace('%', r'\%').replace('&', r'\&') + r''', GPA:''' + education["gpa"].replace('%', r'\%').replace('&', r'\&') + r'''}
+    {''' + education["startDate"].replace('%', r'\%').replace('&', r'\&') + r''' | ''' + education["endDate"].replace('%', r'\%').replace('&', r'\&') + r'''}
 '''
         s_formatted_body += r'''
 \end{itemize}
@@ -262,16 +262,16 @@ def template_two(data, image_name):
                 s_formatted_body += r'''
 \item[]
     \job
-    {''' + job["company"].replace('&', r'\&') + r'''}
-    {''' + job["location"].replace('&', r'\&') + r'''}
-    {''' + job["position"].replace('&', r'\&') + r'''}
-    {''' + job["startDate"].replace('&', r'\&') + r''' | ''' + job["endDate"].replace('&', r'\&') + r'''}
+    {''' + job["company"].replace('%', r'\%').replace('&', r'\&') + r'''}
+    {''' + job["location"].replace('%', r'\%').replace('&', r'\&') + r'''}
+    {''' + job["position"].replace('%', r'\%').replace('&', r'\&') + r'''}
+    {''' + job["startDate"].replace('%', r'\%').replace('&', r'\&') + r''' | ''' + job["endDate"].replace('%', r'\%').replace('&', r'\&') + r'''}
     \begin{itemize}
 '''
                 for duties in job["highlights"]:
                   if duties:
                     s_formatted_body += r'''
-    \item ''' + duties.replace('&', r'\&') + r'''
+    \item ''' + duties.replace('%', r'\%').replace('&', r'\&') + r'''
 '''
                     
                 s_formatted_body += r'''
@@ -334,7 +334,7 @@ def template_two(data, image_name):
     {'''+award["awarder"] +r'''}'''
                 if "summary" in award:
                     s_formatted_body += r'''
-    {\\'''+ award["summary"].replace('&', r'\&') +r'''}
+    {\\'''+ award["summary"].replace('%', r'\%').replace('&', r'\&') +r'''}
 '''
                 else:
                     s_formatted_body += r'''
@@ -518,7 +518,7 @@ def template_three(data, image_name):
       for education in data["education"]:
         s_formatted_body += r'''
         \hline
-        ''' + education["studyType"].replace('&', r'\&') + r'''  & ''' + education["institution"].replace('&', r'\&') + r''' & ''' + education["gpa"].replace('&', r'\&') + r''' & ''' + education["startDate"].replace('&', r'\&') + r'''-''' + education["endDate"].replace('&', r'\&') + r'''\\
+        ''' + education["studyType"].replace('%', r'\%').replace('&', r'\&') + r'''  & ''' + education["institution"].replace('%', r'\%').replace('&', r'\&') + r''' & ''' + education["gpa"].replace('%', r'\%').replace('&', r'\&') + r''' & ''' + education["startDate"].replace('%', r'\%').replace('&', r'\&') + r'''-''' + education["endDate"].replace('%', r'\%').replace('&', r'\&') + r'''\\
 '''
       s_formatted_body += r'''
   \hline
@@ -535,14 +535,14 @@ def template_three(data, image_name):
         if "company" in job:
             s_formatted_body += r'''
             \resumeSubheading
-                {''' + job["company"].replace('&', r'\&') +r'''}{''' + job["location"].replace('&', r'\&') +r'''}
-                {''' + job["position"].replace('&', r'\&') +r'''}{''' + job["startDate"].replace('&', r'\&') +r''' - ''' + job["endDate"].replace('&', r'\&') +r'''}
+                {''' + job["company"].replace('%', r'\%').replace('&', r'\&') +r'''}{''' + job["location"].replace('%', r'\%').replace('&', r'\&') +r'''}
+                {''' + job["position"].replace('%', r'\%').replace('&', r'\&') +r'''}{''' + job["startDate"].replace('%', r'\%').replace('&', r'\&') +r''' - ''' + job["endDate"].replace('%', r'\%').replace('&', r'\&') +r'''}
                 \resumeItemListStart
 '''
             for duties in job["highlights"]:
                 if duties:
                   s_formatted_body += r'''
-                \item {''' + duties.replace('&', r'\&') +r'''}
+                \item {''' + duties.replace('%', r'\%').replace('&', r'\&') +r'''}
 '''
             s_formatted_body += r'''
                 \resumeItemListEnd
@@ -735,7 +735,7 @@ def template_four(data, image_name):
       for edu in data["education"]:
         s_formatted_body += r'''
     \resumeSubheading
-    {''' + edu["institution"].replace('&',r'\&') + r'''}{''' + edu["startDate"].replace('&',r'\&') + r''' - ''' + edu["endDate"].replace('&', r'\&') + r'''}{''' + edu["studyType"].replace('&', r'\&') + r''' in ''' + edu["area"].replace('&', r'\&') + r'''}{''' + edu["gpa"].replace('&', r'\&') + r''' cgpa}
+    {''' + edu["institution"].replace('&',r'\&') + r'''}{''' + edu["startDate"].replace('&',r'\&') + r''' - ''' + edu["endDate"].replace('%', r'\%').replace('&', r'\&') + r'''}{''' + edu["studyType"].replace('%', r'\%').replace('&', r'\&') + r''' in ''' + edu["area"].replace('%', r'\%').replace('&', r'\&') + r'''}{''' + edu["gpa"].replace('%', r'\%').replace('&', r'\&') + r''' cgpa}
     '''
       s_formatted_body += r'''
 \resumeSubHeadingListEnd
@@ -760,7 +760,7 @@ def template_four(data, image_name):
           for item in work["highlights"]:
             if item:
               s_formatted_body += r'''
-        \resumeItem{''' + item.replace('&', r'\&') + r'''}'''
+        \resumeItem{''' + item.replace('%', r'\%').replace('&', r'\&') + r'''}'''
           s_formatted_body += r'''
     \resumeItemListEnd
 
@@ -771,16 +771,16 @@ def template_four(data, image_name):
 '''
     if not is_empty_projects(data["projects"]):
       s_formatted_body += r'''
-\section{''' + data["headings"]["projects"].replace('&', r'\&') + r'''}
+\section{''' + data["headings"]["projects"].replace('%', r'\%').replace('&', r'\&') + r'''}
 \vspace{-5pt}
 \resumeSubHeadingListStart'''
 
       for project in data["projects"]:
         if "name" in project:
           s_formatted_body += r'''
-    \resumeProjectHeading{\textbf{''' + project["name"].replace('&', r'\&') + r'''}}{\href{''' + project["url"].replace('_','\_')+r'''}{\underline{''' + project["url"].replace('_','\_')+r'''}}}
+    \resumeProjectHeading{\textbf{''' + project["name"].replace('%', r'\%').replace('&', r'\&') + r'''}}{\href{''' + project["url"].replace('_','\_')+r'''}{\underline{''' + project["url"].replace('_','\_')+r'''}}}
     \resumeItemListStart
-      \resumeItem{'''+project["description"].replace('&', r'\&') + r'''}'''
+      \resumeItem{'''+project["description"].replace('%', r'\%').replace('&', r'\&') + r'''}'''
 
           s_formatted_body += r'''
     \resumeItemListEnd
@@ -796,7 +796,7 @@ def template_four(data, image_name):
       s_formatted_body += r'''
 %
 %-----------PROGRAMMING SKILLS-----------
-\section{''' + data["headings"]["skills"].replace('&', r'\&') + r'''}
+\section{''' + data["headings"]["skills"].replace('%', r'\%').replace('&', r'\&') + r'''}
 \begin{itemize}[leftmargin=0.15in, label={}]
   \item{
 '''
@@ -812,7 +812,7 @@ def template_four(data, image_name):
 '''
     if not is_empty_awards(data["awards"]):
       s_formatted_body += r'''
-\section{''' + data["headings"]["awards"].replace('&', r'\&') + r'''}
+\section{''' + data["headings"]["awards"].replace('%', r'\%').replace('&', r'\&') + r'''}
 \resumeSubHeadingListStart
 '''
       for award in data["awards"]:
@@ -976,8 +976,8 @@ def template_five(data, image_name):
         for edu in data["education"]:
            s_formatted_body += r'''
     \resumeSubheading
-      {''' + edu["institution"].replace('&',r'\&') + r'''}{CGPA/Percentage:  ''' + edu["gpa"].replace('&', r'\&') + r'''}
-      {''' + edu["studyType"].replace('&', r'\&') + r''' in ''' + edu["area"].replace('&', r'\&') + r'''}{''' + edu["startDate"].replace('&',r'\&') + r'''-''' + edu["endDate"].replace('&', r'\&') + r'''}
+      {''' + edu["institution"].replace('&',r'\&') + r'''}{CGPA/Percentage:  ''' + edu["gpa"].replace('%', r'\%').replace('&', r'\&') + r'''}
+      {''' + edu["studyType"].replace('%', r'\%').replace('&', r'\&') + r''' in ''' + edu["area"].replace('%', r'\%').replace('&', r'\&') + r'''}{''' + edu["startDate"].replace('&',r'\&') + r'''-''' + edu["endDate"].replace('%', r'\%').replace('&', r'\&') + r'''}
 '''
     #---------------- Education loop end -----------------------
         s_formatted_body += r'''
@@ -1003,7 +1003,7 @@ def template_five(data, image_name):
             for item in work['highlights']:
                if item:
                   s_formatted_body += r'''
-        \item {''' + item.replace('&', r'\&') + r'''} 
+        \item {''' + item.replace('%', r'\%').replace('&', r'\&') + r'''} 
 '''
             s_formatted_body += r'''
       \resumeItemListEnd
@@ -1016,7 +1016,7 @@ def template_five(data, image_name):
 ######### Skills ############################
     if not is_empty_skills(data["skills"]):
         s_formatted_body += r'''
-\section{\textbf{''' + data["headings"]["skills"].replace('&', r'\&') + r'''}}
+\section{\textbf{''' + data["headings"]["skills"].replace('%', r'\%').replace('&', r'\&') + r'''}}
  \begin{itemize}[leftmargin=0.1in, label={}]
     \small{\item{
     \textbf{}{} \\
@@ -1033,20 +1033,20 @@ def template_five(data, image_name):
 ######### Projects ############################
     if not is_empty_projects(data["projects"]):
         s_formatted_body += r'''
-\section{\textbf{''' + data["headings"]["projects"].replace('&', r'\&') + r'''}}
+\section{\textbf{''' + data["headings"]["projects"].replace('%', r'\%').replace('&', r'\&') + r'''}}
   \resumeSubHeadingListStart
 '''
         for project in data["projects"]:
             if "name" in project:
                 s_formatted_body += r'''
     \resumeProject
-      {''' + project["name"].replace('&', r'\&') + r'''} %Project Name
+      {''' + project["name"].replace('%', r'\%').replace('&', r'\&') + r'''} %Project Name
       {'''+ ", ".join([key for key in project['keywords'] if key])+r'''
 } %Project Name, Location Name
       {''' + project["url"].replace('_','\_')+r'''} %Event Dates
 
       \resumeItemListStart
-        \item {'''+project["description"].replace('&', r'\&') + r'''}
+        \item {'''+project["description"].replace('%', r'\%').replace('&', r'\&') + r'''}
       \resumeItemListEnd
         
     \vspace{2mm}
@@ -1058,7 +1058,7 @@ def template_five(data, image_name):
 ######### Awards ############################
     if not is_empty_awards(data["awards"]):
         s_formatted_body += r'''
-\section{\textbf{''' + data["headings"]["awards"].replace('&', r'\&') + r'''}}
+\section{\textbf{''' + data["headings"]["awards"].replace('%', r'\%').replace('&', r'\&') + r'''}}
  \vspace{-0.4mm}
  \resumeSubHeadingListStart
 '''
@@ -1132,11 +1132,11 @@ def template_six(data, image_name):
         for edu in data["education"]:
             s_formatted_body += r'''
 	\cventry
-	{''' + edu["studyType"].replace('&', r'\&') + r''' in ''' + edu["area"].replace('&', r'\&') + r'''}
+	{''' + edu["studyType"].replace('%', r'\%').replace('&', r'\&') + r''' in ''' + edu["area"].replace('%', r'\%').replace('&', r'\&') + r'''}
 	{''' + edu["institution"].replace('&',r'\&') + r'''}
-	{''' + edu["location"].replace('&', r'\&') + r'''}
-	{''' + edu["startDate"].replace('&',r'\&') + r'''-''' + edu["endDate"].replace('&', r'\&') + r'''}
-	{GPA: ''' + edu["gpa"].replace('&', r'\&') + r'''}'''
+	{''' + edu["location"].replace('%', r'\%').replace('&', r'\&') + r'''}
+	{''' + edu["startDate"].replace('&',r'\&') + r'''-''' + edu["endDate"].replace('%', r'\%').replace('&', r'\&') + r'''}
+	{GPA: ''' + edu["gpa"].replace('%', r'\%').replace('&', r'\&') + r'''}'''
         s_formatted_body += r'''
 \end{cventries}
 
@@ -1162,7 +1162,7 @@ def template_six(data, image_name):
                 for item in work['highlights']:
                     if item:
                         s_formatted_body += r'''
-        \item {''' + item.replace('&', r'\&') + r'''}'''
+        \item {''' + item.replace('%', r'\%').replace('&', r'\&') + r'''}'''
                 s_formatted_body += r'''
 	\end{cvitems}}
 '''
@@ -1175,7 +1175,7 @@ def template_six(data, image_name):
 
     if not is_empty_skills(data["skills"]):
         s_formatted_body += r'''
-\cvsection{''' + data["headings"]["skills"].replace('&', r'\&') + r'''}
+\cvsection{''' + data["headings"]["skills"].replace('%', r'\%').replace('&', r'\&') + r'''}
 \begin{cventries}
 	\cventry
 	{}
@@ -1198,15 +1198,15 @@ def template_six(data, image_name):
 ##############################################
     if not is_empty_projects(data["projects"]):
         s_formatted_body += r'''
-\cvsection{''' + data["headings"]["projects"].replace('&', r'\&') + r'''}
+\cvsection{''' + data["headings"]["projects"].replace('%', r'\%').replace('&', r'\&') + r'''}
 \begin{cventries}
 '''
         for project in data["projects"]:
             if "name" in project:
                 s_formatted_body += r'''
 	\cventry
-	{'''+project["description"].replace('&', r'\&') + r'''}
-	{''' + project["name"].replace('&', r'\&') + r'''}
+	{'''+project["description"].replace('%', r'\%').replace('&', r'\&') + r'''}
+	{''' + project["name"].replace('%', r'\%').replace('&', r'\&') + r'''}
 	{'''+ ", ".join([key for key in project['keywords'] if key])+r'''}
 	{''' + project["url"].replace('_','\_')+r'''}
 	{}
@@ -1221,7 +1221,7 @@ def template_six(data, image_name):
 ##############################################
     if not is_empty_awards(data["awards"]):
         s_formatted_body += r'''
-\cvsection{''' + data["headings"]["awards"].replace('&', r'\&') + r'''}
+\cvsection{''' + data["headings"]["awards"].replace('%', r'\%').replace('&', r'\&') + r'''}
 \begin{cvhonors}
 '''
         for award in data["awards"]:
