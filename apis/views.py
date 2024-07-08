@@ -56,7 +56,14 @@ class LaTeXToPDFView(APIView):
 
             def generate_pdf():
                 try:
-                    doc = Document(geometry_options={'tmargin': '0.8in', 'bmargin': '0.8in', 'lmargin': '0.8in', 'rmargin': '0.8in'})
+                    geometry_options = {
+                        'a4paper': True,
+                        'tmargin': '0.8in',
+                        'bmargin': '0.8in',
+                        'lmargin': '0.8in',
+                        'rmargin': '0.8in'
+                    }
+                    doc = Document(geometry_options=geometry_options)
                     if applicant_data["selectedTemplate"] == 1:
                         doc_head, doc_body = template_one(applicant_data, image_name)
                     elif applicant_data["selectedTemplate"] == 2:
@@ -72,7 +79,7 @@ class LaTeXToPDFView(APIView):
                     else:
                         return Response({'error': 'Selected Template Does Not Exist'}, status=400)
                     if applicant_data["selectedTemplate"] == 6:
-                        doc = Document(documentclass=NoEscape('awesome-cv'))
+                        doc = Document(documentclass=NoEscape('awesome-cv'),geometry_options=geometry_options)
                     doc.preamble.append(NoEscape(doc_head))
                     doc.append(NoEscape(doc_body))
                     pdf_name = f"resume_{uuid4()}"
