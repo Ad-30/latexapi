@@ -23,21 +23,25 @@ class LaTeXToPDFView(APIView):
         try:
             image_name = None
             applicant_data = json.loads(request.POST.get('applicantData', '{}'))
-            
+            # print(request.POST.get('imageURL'))
             if not applicant_data:
                 return Response({'error': 'Json data required'}, status=400)
 
             if 'selectedTemplate' not in applicant_data:
                 return Response({'error': 'Selected template not provided'}, status=400)
 
-            if applicant_data["selectedTemplate"] == 3:
+            if applicant_data["selectedTemplate"] in [3, 5]:
                 image_url = request.POST.get('imageURL')
                 if not image_url:
                     return Response({'error': 'Image URL required for selected template 3'}, status=400)
                 try:
                     image_name = image_url.split('/')[-1].replace('%', '')
                     image_path = os.path.join(settings.BASE_DIR, 'apis', 'pdfs', image_name)
-                    urllib.request.urlretrieve(image_url, image_path)
+                    print(image_url)
+                    try:
+                        urllib.request.urlretrieve(image_url, image_path)
+                    except:
+                        urllib.request.urlretrieve('https://resushape.s3.eu-north-1.amazonaws.com/user.png', image_path)
                     image = Image.open(image_path)
                     target_width = 100
                     original_width, original_height = image.size
@@ -63,6 +67,8 @@ class LaTeXToPDFView(APIView):
                         doc_head, doc_body = template_three(applicant_data, image_name)
                     elif applicant_data["selectedTemplate"] == 4:
                         doc_head, doc_body = template_four(applicant_data, image_name)
+                    elif applicant_data["selectedTemplate"] == 5:
+                        doc_head, doc_body = template_five(applicant_data, image_name)
                     else:
                         return Response({'error': 'Selected Template Does Not Exist'}, status=400)
                     doc.preamble.append(NoEscape(doc_head))
@@ -83,7 +89,7 @@ class LaTeXToPDFView(APIView):
                 try:
                     file = os.path.join(settings.BASE_DIR, 'apis', 'pdfs', pdf_name_or_response + pdf_ex)
                     response = FileResponse(open(file, 'rb'), as_attachment=True, filename="resume.pdf")
-                    if applicant_data["selectedTemplate"] == 3:
+                    if applicant_data["selectedTemplate"] in [3, 5]:
                         image_path = os.path.join(settings.BASE_DIR, 'apis', 'pdfs', image_name)
                         os.remove(image_path)
                     os.remove(file)

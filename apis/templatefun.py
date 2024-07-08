@@ -487,7 +487,9 @@ def template_three(data, image_name):
 \fontfamily{cmr}\selectfont
 %----------HEADING-----------------
 \parbox{2.8cm}{%
-
+'''
+    if image_name:
+       s_formatted_body += r'''
 \includegraphics[width=2.5cm,clip]{''' + image_name + r'''}
 % replace the fields with your details
 
@@ -825,6 +827,251 @@ def template_four(data, image_name):
 
       s_formatted_body += r'''
 \resumeSubHeadingListEnd
+'''
+    return s_formatted_head, s_formatted_body
+
+def template_five(data, image_name):
+    s_formatted_head = r'''
+\usepackage{latexsym}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{ragged2e}
+\usepackage[empty]{fullpage}
+\usepackage{wrapfig}
+\usepackage{lipsum}
+\usepackage{tabularx}
+\usepackage{titlesec}
+\usepackage{geometry}
+\usepackage{marvosym}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{cfr-lm}
+\usepackage[T1]{fontenc}
+\setlength{\footskip}{4.08003pt} 
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\geometry{left=1.4cm, top=1cm, right=1.4cm, bottom=1cm}
+% Adjust margins
+%\addtolength{\oddsidemargin}{-0.5in}
+%\addtolength{\evensidemargin}{-0.5in}
+%\addtolength{\textwidth}{1in}
+\usepackage[most]{tcolorbox}
+\tcbset{
+    frame code={},
+    center title,
+    left=0pt,
+    right=0pt,
+    top=0pt,
+    bottom=0pt,
+    colback=gray!20,
+    colframe=white,
+    width=\dimexpr\textwidth\relax,
+    enlarge left by=-2mm,
+    boxsep=4pt,
+    arc=0pt,outer arc=0pt,
+}
+
+\urlstyle{same}
+
+\raggedright
+\setlength{\footskip}{4.08003pt}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-7pt}]
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[2]{
+  \item{
+    \textbf{#1}{\hspace{0.5mm}#2 \vspace{-0.5mm}}
+  }
+}
+
+\newcommand{\resumePOR}[3]{
+\vspace{0.5mm}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+        \textbf{#1}\hspace{0.3mm}#2 & \textit{\small{#3}} 
+    \end{tabular*}
+    \vspace{-2mm}
+}
+
+\newcommand{\resumeSubheading}[4]{
+\vspace{0.5mm}\item
+    \begin{tabular*}{0.98\textwidth}[t]{l@{\extracolsep{\fill}}r}
+        \textbf{#1} & \textit{\footnotesize{#4}} \\
+        \textit{\footnotesize{#3}} &  \footnotesize{#2}\\
+    \end{tabular*}
+    \vspace{-2.4mm}
+}
+
+\newcommand{\resumeProject}[4]{
+\vspace{0.5mm}\item
+    \begin{tabular*}{0.98\textwidth}[t]{l@{\extracolsep{\fill}}r}
+        \textbf{#1} & \textit{\footnotesize{#3}} \\
+        \footnotesize{\textit{#2}} & \footnotesize{#4}
+    \end{tabular*}
+    \vspace{-2.4mm}
+}
+
+\newcommand{\resumeSubItem}[2]{\resumeItem{#1}{#2}\vspace{-4pt}}
+
+% \renewcommand{\labelitemii}{$\circ$}
+\renewcommand{\labelitemi}{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*,labelsep=0mm]}
+\newcommand{\resumeHeadingSkillStart}{\begin{itemize}[leftmargin=*,itemsep=1.7mm, rightmargin=2ex]}
+\newcommand{\resumeItemListStart}{\begin{justify}\begin{itemize}[leftmargin=3ex, rightmargin=2ex, noitemsep,labelsep=1.2mm,itemsep=0mm]\small}
+
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}\vspace{2mm}}
+\newcommand{\resumeHeadingSkillEnd}{\end{itemize}\vspace{-2mm}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\end{justify}\vspace{-2mm}}
+\newcommand{\cvsection}[1]{%
+\vspace{2mm}
+\begin{tcolorbox}
+    \textbf{\large #1}
+\end{tcolorbox}
+    \vspace{-4mm}
+}
+
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}%
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}%
+\newcolumntype{C}{>{\centering\arraybackslash}X}%
+
+\newcommand{\name}{''' + (data["basics"]["name"].replace('&',r'\&') or 'Name') + r'''} % Your Name
+\newcommand{\course}{'''+ (data["basics"]["location"]["address"].replace('&',r'\&') or '') + r'''} % Your Program
+\newcommand{\phone}{''' + (data["basics"]["phone"].replace('&',r'\&') or ' ') + r'''} % Your Phone Number
+\newcommand{\emaila}{''' + (data["basics"]["email"].replace('&',r'\&') or '') + r'''} %Email
+'''
+    s_formatted_body = r'''
+\fontfamily{cmr}\selectfont
+%----------HEADING-----------------
+
+\parbox{2.6cm}{%
+\includegraphics[width=2.35cm,clip]{'''+ image_name +r'''}
+}
+\parbox{\dimexpr\linewidth-2.9cm\relax}{
+\begin{tabularx}{\linewidth}{L r} \\
+  \textbf{\Large \name} & {\raisebox{0.0\height}{\footnotesize \faPhone}\ +91-\phone}\\
+  \course & \href{mailto:\emaila}{\raisebox{0.0\height}{\footnotesize \faEnvelope}\ {\emaila}}\\
+\end{tabularx}
+}
+'''
+######### EDUCATION ############################
+    if not is_empty_education(data["education"]):
+        s_formatted_body += r'''
+\section{\textbf{''' + data["headings"]["education"].replace('&',r'\&') + r'''}}
+  \resumeSubHeadingListStart
+'''
+    #--------------- Educations loop ---------------------------
+        for edu in data["education"]:
+           s_formatted_body += r'''
+    \resumeSubheading
+      {''' + edu["institution"].replace('&',r'\&') + r'''}{CGPA/Percentage:  ''' + edu["gpa"].replace('&', r'\&') + r'''}
+      {''' + edu["studyType"].replace('&', r'\&') + r''' in ''' + edu["area"].replace('&', r'\&') + r'''}{''' + edu["startDate"].replace('&',r'\&') + r'''-''' + edu["endDate"].replace('&', r'\&') + r'''}
+'''
+    #---------------- Education loop end -----------------------
+        s_formatted_body += r'''
+  \resumeSubHeadingListEnd
+\vspace{-5.5mm}
+'''
+######### EXPERIENCE ############################
+    if not is_empty_work(data["work"]):
+        s_formatted_body += r'''
+\section{\textbf{''' + data["headings"]["work"].replace('&',r'\&') + r'''}}
+ \vspace{-0.4mm}
+  \resumeSubHeadingListStart
+'''
+        #--------------- Work loop ---------------------------
+        for work in data["work"]:
+          if 'company' in work:
+            s_formatted_body += r'''
+    \resumeSubheading
+      {''' + work["company"].replace('&',r'\&') + r'''}{''' + work["startDate"].replace('&',r'\&') + r''' - ''' + work["endDate"].replace('&',r'\&') + r'''}
+      {''' + work["position"].replace('&',r'\&') + r'''}{2023}
+      \resumeItemListStart
+'''
+            for item in work['highlights']:
+               if item:
+                  s_formatted_body += r'''
+        \item {''' + item.replace('&', r'\&') + r'''} 
+'''
+            s_formatted_body += r'''
+      \resumeItemListEnd
+'''
+        s_formatted_body += r'''
+  \resumeSubHeadingListEnd
+   \vspace{-20pt}
+'''
+
+######### Skills ############################
+    if not is_empty_skills(data["skills"]):
+        s_formatted_body += r'''
+\section{\textbf{''' + data["headings"]["skills"].replace('&', r'\&') + r'''}}
+ \begin{itemize}[leftmargin=0.1in, label={}]
+    \small{\item{
+    \textbf{}{} \\
+'''
+        for skill in data["skills"]:
+           if "name" in skill:
+              s_formatted_body += r'''
+    \textbf{'''+skill["name"]+r'''}{: ''' + ", ".join([f" {keys}" for keys in skill["keywords"] if keys is not None and keys != '' ]) +r'''} \\'''
+        s_formatted_body += r'''
+    }}
+ \end{itemize}
+ \vspace{-12pt}
+'''
+######### Projects ############################
+    if not is_empty_projects(data["projects"]):
+        s_formatted_body += r'''
+\section{\textbf{''' + data["headings"]["projects"].replace('&', r'\&') + r'''}}
+  \resumeSubHeadingListStart
+'''
+        for project in data["projects"]:
+            if "name" in project:
+                s_formatted_body += r'''
+    \resumeProject
+      {''' + project["name"].replace('&', r'\&') + r'''} %Project Name
+      {'''+ ", ".join([key for key in project['keywords'] if key])+r'''
+} %Project Name, Location Name
+      {''' + project["url"].replace('_','\_')+r'''} %Event Dates
+
+      \resumeItemListStart
+        \item {'''+project["description"].replace('&', r'\&') + r'''}
+      \resumeItemListEnd
+        
+    \vspace{2mm}
+'''
+        s_formatted_body += r'''
+  \resumeSubHeadingListEnd
+\vspace{-20pt}
+'''
+######### Awards ############################
+    if not is_empty_awards(data["awards"]):
+        s_formatted_body += r'''
+\section{\textbf{''' + data["headings"]["awards"].replace('&', r'\&') + r'''}}
+ \vspace{-0.4mm}
+ \resumeSubHeadingListStart
+'''
+        for award in data["awards"]:
+            if "title" in award:
+                s_formatted_body += r'''
+    \resumePOR{'''+ award["title"].replace('&','\&') +r''' } % Award
+     {'''+ award["summary"].replace('&','\&') +r'''} % Event
+     {'''+ award["date"].replace('&','\&') +r'''} %Event Year
+'''
+        s_formatted_body += r'''
+\resumeSubHeadingListEnd
+\vspace{-5mm}
 '''
     return s_formatted_head, s_formatted_body
 
