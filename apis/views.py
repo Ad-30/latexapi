@@ -15,6 +15,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes, permission_classes
 from apis.authentication import AccessKeyAuthentication
 from django.conf import settings
+import traceback
 @method_decorator(csrf_exempt, name='dispatch')
 @authentication_classes([AccessKeyAuthentication])
 # @permission_classes([IsAuthenticated])
@@ -64,20 +65,23 @@ class LaTeXToPDFView(APIView):
                         'rmargin': '0.8in'
                     }
                     doc = Document(geometry_options=geometry_options)
-                    if applicant_data["selectedTemplate"] == 1:
-                        doc_head, doc_body = template_one(applicant_data, image_name)
-                    elif applicant_data["selectedTemplate"] == 2:
-                        doc_head, doc_body = template_two(applicant_data, image_name)
-                    elif applicant_data["selectedTemplate"] == 3:
-                        doc_head, doc_body = template_three(applicant_data, image_name)
-                    elif applicant_data["selectedTemplate"] == 4:
-                        doc_head, doc_body = template_four(applicant_data, image_name)
-                    elif applicant_data["selectedTemplate"] == 5:
-                        doc_head, doc_body = template_five(applicant_data, image_name)
-                    elif applicant_data["selectedTemplate"] == 6:
-                        doc_head, doc_body = template_six(applicant_data, image_name)
-                    else:
-                        return Response({'error': 'Selected Template Does Not Exist'}, status=400)
+                    try:
+                        if applicant_data["selectedTemplate"] == 1:
+                            doc_head, doc_body = template_one(applicant_data, image_name)
+                        elif applicant_data["selectedTemplate"] == 2:
+                            doc_head, doc_body = template_two(applicant_data, image_name)
+                        elif applicant_data["selectedTemplate"] == 3:
+                            doc_head, doc_body = template_three(applicant_data, image_name)
+                        elif applicant_data["selectedTemplate"] == 4:
+                            doc_head, doc_body = template_four(applicant_data, image_name)
+                        elif applicant_data["selectedTemplate"] == 5:
+                            doc_head, doc_body = template_five(applicant_data, image_name)
+                        elif applicant_data["selectedTemplate"] == 6:
+                            doc_head, doc_body = template_six(applicant_data, image_name)
+                        else:
+                            return Response({'error': 'Selected Template Does Not Exist'}, status=400)
+                    except Exception as e:
+                        return Response({'error': f'Unexpected error with template processing'}, status=500)
                     if applicant_data["selectedTemplate"] == 6:
                         doc = Document(documentclass=NoEscape('awesome-cv'),geometry_options=geometry_options)
                     doc.preamble.append(NoEscape(doc_head))

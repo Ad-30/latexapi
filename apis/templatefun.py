@@ -101,12 +101,12 @@ def template_one(data, image_name):
 \textit{''' + job["position"].replace('%', r'\%').replace('&', r'\&') +r'''} \hfill ''' + job["startDate"].replace('%', r'\%').replace('&', r'\&') +r''' - ''' + job["endDate"].replace('%', r'\%').replace('&', r'\&') +r'''\\
 \vspace{-1mm}
 '''
-            if any(item for item in job["highlights"].replace('%', r'\%').replace('&', r'\&')if item):
+            if any(item.replace('%', r'\%').replace('&', r'\&') for item in job["highlights"] if item):
               s_formatted_body += r'''
 \begin{itemize} \itemsep 1pt
 '''
             
-              duties = "\n".join([f"      \\item {duty}" for duty in job["highlights"].replace('%', r'\%').replace('&', r'\&')if duty])
+              duties = "\n".join([f"      \\item {duty}" for duty in job["highlights"] if duty])
               s_formatted_body += duties + "\n"
               s_formatted_body += r'''
 \end{itemize}
@@ -1041,7 +1041,7 @@ def template_five(data, image_name):
                 s_formatted_body += r'''
     \resumeProject
       {''' + project["name"].replace('%', r'\%').replace('&', r'\&') + r'''} %Project Name
-      {'''+ ", ".join([key for key in project['keywords'].replace('%', r'\%').replace('&', r'\&')if key])+r'''
+      {'''+ ", ".join([key.replace('%', r'\%').replace('&', r'\&') for key in project['keywords'] if key])+r'''
 } %Project Name, Location Name
       {''' + project["url"].replace('_','\_')+r'''} %Event Dates
 
