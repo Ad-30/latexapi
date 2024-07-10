@@ -11,11 +11,15 @@ import urllib.request
 from .templatefun import *
 from PIL import Image
 from uuid import uuid4
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import authentication_classes, permission_classes
 from apis.authentication import AccessKeyAuthentication
 from django.conf import settings
+from rest_framework.parsers import MultiPartParser, FormParser
 import traceback
+from .serializers import ImageSerializer
+from .models import *
 @method_decorator(csrf_exempt, name='dispatch')
 @authentication_classes([AccessKeyAuthentication])
 # @permission_classes([IsAuthenticated])
@@ -118,6 +122,48 @@ class LaTeXToPDFView(APIView):
             return Response({'error': 'Invalid JSON data'}, status=400)
         except Exception as e:
             return Response({'error': f'Unexpected server error: {str(e)}'}, status=500)
+        
+
+class ImageUploadView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        action = request.data.get('action')
+        if action == 'upload':
+            return self.upload_image(request)
+        elif action == 'delete':
+            return self.delete_image(request)
+        else:
+            return Response({'detail': 'Invalid action'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def upload_image(self, request):
+        serializer = ImageSerializer(data=request.data)
+        if serializer.is_valid():
+            image_instance = serializer.save()
+            image_url = request.build_absolute_uri(settings.MEDIA_URL + image_instance.image.name)
+            response_data = {
+                'id': image_instance.id,
+                'image': image_url,
+                'uploaded_at': image_instance.uploaded_at
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED)
+        else:
+            return Response('Unexpected error occured', status=status.HTTP_400_BAD_REQUEST)
+
+    def delete_image(self, request):
+        image_url = request.data.get('url')
+        if not image_url:
+            return Response({'detail': 'Image URL is required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            image_path = image_url.split(settings.MEDIA_URL)[-1]
+            image = ImageModel.objects.filter(image=image_path).first()
+            image.image.delete()
+            image.delete() 
+            return Response({'detail': 'Image deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        except ImageModel.DoesNotExist:
+            return Response({'detail': 'Image not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'detail': 'Unexpected error occured'}, status=status.HTTP_400_BAD_REQUEST)
         
             
         
