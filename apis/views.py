@@ -139,16 +139,20 @@ class ImageUploadView(APIView):
     def upload_image(self, request):
         serializer = ImageSerializer(data=request.data)
         if serializer.is_valid():
-            image_instance = serializer.save()
-            image_url = request.build_absolute_uri(settings.MEDIA_URL + image_instance.image.name)
-            response_data = {
-                'id': image_instance.id,
-                'image': image_url,
-                'uploaded_at': image_instance.uploaded_at
-            }
-            return Response(response_data, status=status.HTTP_201_CREATED)
+            try:
+                image_instance = serializer.save()
+                image_url = request.build_absolute_uri(settings.MEDIA_URL + image_instance.image.name)
+                response_data = {
+                    'id': image_instance.id,
+                    'image': image_url,
+                    'uploaded_at': image_instance.uploaded_at
+                }
+                return Response(response_data, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                return Response({'detail': f'Error saving image: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
-            return Response('Unexpected error occured', status=status.HTTP_400_BAD_REQUEST)
+            errors = serializer.errors
+            return Response({'detail': 'Invalid data', 'errors': errors}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete_image(self, request):
         image_url = request.data.get('url')
@@ -157,13 +161,16 @@ class ImageUploadView(APIView):
         try:
             image_path = image_url.split(settings.MEDIA_URL)[-1]
             image = ImageModel.objects.filter(image=image_path).first()
-            image.image.delete()
-            image.delete() 
-            return Response({'detail': 'Image deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+            if image:
+                image.image.delete()
+                image.delete()
+                return Response({'detail': 'Image deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({'detail': 'Image not found'}, status=status.HTTP_404_NOT_FOUND)
         except ImageModel.DoesNotExist:
             return Response({'detail': 'Image not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({'detail': 'Unexpected error occured'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': f'Unexpected error occurred: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
         
             
         
