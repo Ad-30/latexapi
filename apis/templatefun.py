@@ -1278,6 +1278,10 @@ def template_six(data, image_name):
 	{'''+ award["awarder"].replace('&','\&') +r'''}
 	{'''+ award["date"].replace('&','\&') +r'''}
    '''
+            else:
+                s_formatted_body += r'''
+                {}
+            '''
         s_formatted_body += r'''
 \end{cvhonors}
 

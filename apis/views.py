@@ -39,20 +39,12 @@ class LaTeXToPDFView(APIView):
                 if not image_url:
                     return Response({'error': 'Image URL required for selected template 3'}, status=400)
                 try:
-                    if 'latexapi.pythonanywhere.com' in image_url:
-                        image_name = image_url.split('/')[-1]
-                        image_instance = ImageModel.objects.filter(image=f'images/{image_name}').first()
-                        if not image_instance:
-                            return Response({'error': 'Image not found in database'}, status=404)
-
-                        image_path = os.path.join(settings.MEDIA_ROOT, image_instance.image.name)
-                    else:
-                        image_name = image_url.split('/')[-1].replace('%', '')
-                        image_path = os.path.join(settings.BASE_DIR, 'apis', 'pdfs', image_name)
-                        try:
-                            urllib.request.urlretrieve(image_url, image_path)
-                        except:
-                            urllib.request.urlretrieve('https://resushape.s3.eu-north-1.amazonaws.com/user.png', image_path)
+                    image_name = image_url.split('/')[-1].replace('%', '')
+                    image_path = os.path.join(settings.BASE_DIR, 'apis', 'pdfs', image_name)
+                    try:
+                        urllib.request.urlretrieve(image_url, image_path)
+                    except:
+                        urllib.request.urlretrieve('https://resushape.s3.eu-north-1.amazonaws.com/user.png', image_path)
                     image = Image.open(image_path)
                     target_width = 100
                     original_width, original_height = image.size
